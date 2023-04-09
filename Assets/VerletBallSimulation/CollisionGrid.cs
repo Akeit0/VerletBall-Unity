@@ -11,7 +11,7 @@ namespace VerletBallSimulation {
         
         public readonly int Width;
         public readonly int Height;
-        const int MaxObjectsPerCell = 4;
+        public const int MaxObjectsPerCell = 4;
         
         public CollisionGrid(int width, int height) {
             Width = width;
@@ -54,5 +54,4 @@ namespace VerletBallSimulation {
             ObjectsCount = indicesCount;
         }
     }
-    
 }

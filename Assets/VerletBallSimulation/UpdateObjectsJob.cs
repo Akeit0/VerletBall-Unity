@@ -10,39 +10,31 @@ namespace VerletBallSimulation {
         public float Width;
         public float Height;
         public float2 Gravity;
-        public NativeArray<PhysicsObject> Objects;
+        public NativeArray<float2> LastPositions;
         public NativeArray<float2> Positions;
 
         public void Execute(int i) {
             const float margin = 2.0f;
             float maxX = Width - margin;
             float maxY = Height - margin;
-            var obj = Objects[i];
-            obj.Acceleration += Gravity;
+            var obj=new PhysicsObject(LastPositions[i],Gravity) ;
             // Apply Verlet integration
             var pos = obj.Update(Positions[i], DeltaTime);
             // Apply map borders collisions
             if (pos.x > maxX) {
-                //obj.LastPosition.x = 2*maxX - obj.LastPosition.x;
                 pos.x = maxX;
             }
             else if (pos.x < margin) {
-                //obj.LastPosition.x = 2 * margin - obj.LastPosition.x;
                 pos.x = margin;
-
             }
-
             if (pos.y > maxY) {
-                //obj.LastPosition.y = 2 * maxY - obj.LastPosition.y;
                 pos.y = maxY;
-
             }
             else if (pos.y < margin) {
-                // obj.LastPosition.y = 2 * margin - obj.LastPosition.y;
                 pos.y = margin;
             }
 
-            Objects[i] = obj;
+            LastPositions[i] = obj.LastPosition;
             Positions[i] = pos;
         }
     }
@@ -54,35 +46,30 @@ namespace VerletBallSimulation {
         public float Height;
         public DarkStar Star;
         public float2 Gravity;
-        public NativeArray<PhysicsObject> Objects;
+        public NativeArray<float2> LastPositions;
         public NativeArray<float2> Positions;
         public void Execute(int i) {
             const float margin = 2.0f;
             float maxX=Width-margin;
             float maxY=Height-margin ;
-             var obj =  Objects[i];
-             var pos = Positions[i];
-             obj.Acceleration += Star.GetGravity(10000f,pos)+Gravity;
+            
+            var pos = Positions[i];
+            var obj =  new PhysicsObject(LastPositions[i],Star.GetGravity(10000f,pos)+Gravity);
             // Apply Verlet integration
-            pos=obj.Update(Positions[i],DeltaTime);
+            pos=obj.Update(pos,DeltaTime);
             // Apply map borders collisions
             if (pos.x > maxX ) {
-                //obj.LastPosition.x = 2*maxX - obj.LastPosition.x;
                 pos.x = maxX;
             } else if (pos.x < margin) {
-                //obj.LastPosition.x = 2 * margin - obj.LastPosition.x;
                 pos.x = margin;
-             
             }
             if (pos.y > maxY ) {
-                //obj.LastPosition.y = 2 * maxY - obj.LastPosition.y;
                 pos.y = maxY;
                 
             } else if (pos.y < margin) {
-                // obj.LastPosition.y = 2 * margin - obj.LastPosition.y;
                 pos.y = margin;
             }
-            Objects[i] = obj;
+            LastPositions[i] = obj.LastPosition;
             Positions[i] = pos;
         }
     }

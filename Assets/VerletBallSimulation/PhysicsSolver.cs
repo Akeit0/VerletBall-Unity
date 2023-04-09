@@ -9,7 +9,7 @@ using UnityEngine.Profiling;
 namespace VerletBallSimulation {
     public unsafe class PhysicsSolver :IDisposable {
         public float2* PositionPtr;
-        public NativeArray<PhysicsObject> ObjectsArray;
+        public NativeArray<float2> LastPositionArray;
         public NativeArray<float2> PositionArray;
         public NativeArray<Color32> ColorArray;
         public CollisionGrid Grid;
@@ -19,7 +19,7 @@ namespace VerletBallSimulation {
         public PhysicsSolver(int width, int height,int capacity) {
             Capacity =capacity;
             Grid = new CollisionGrid(width, height);
-            ObjectsArray= new NativeArray<PhysicsObject>(Capacity, Allocator.Persistent);
+            LastPositionArray= new NativeArray<float2>(Capacity, Allocator.Persistent);
             PositionArray= new NativeArray<float2>(Capacity, Allocator.Persistent);
             PositionPtr = (float2*)PositionArray.GetUnsafePtr();
             ColorArray=new NativeArray<Color32>(Capacity, Allocator.Persistent);
@@ -27,13 +27,15 @@ namespace VerletBallSimulation {
         }
         public JobHandle SolveCollisions(JobHandle jobHandle) {
 
-           jobHandle = new SolveCollisionJob(PositionPtr, Grid, 0).Schedule((Grid.Width+2)/3,0,jobHandle);
-           jobHandle=   new SolveCollisionJob(PositionPtr, Grid, 1).Schedule((Grid.Width+1)/3,0,jobHandle);
-           return   new SolveCollisionJob(PositionPtr, Grid, 2).Schedule(Grid.Width/3,0,jobHandle);
+          jobHandle = new SolveCollisionJob(PositionPtr, Grid, 0).Schedule((Grid.Width+5)/6,0,jobHandle);
+          return    new SolveCollisionJob(PositionPtr, Grid, 1).Schedule((Grid.Width+2)/6,0,jobHandle);
+           // jobHandle = new SolveCollisionJob(PositionPtr, Grid, 0).Schedule((Grid.Width+2)/3,0,jobHandle);
+           // jobHandle=   new SolveCollisionJob(PositionPtr, Grid, 1).Schedule((Grid.Width+1)/3,0,jobHandle);
+           // return   new SolveCollisionJob(PositionPtr, Grid, 2).Schedule(Grid.Width/3,0,jobHandle);
         }
         public bool AddObject(float2 position, float2 velocity,Color32 color) {
             if(ObjectCount>=Capacity) return false;
-            ObjectsArray[ObjectCount] = new PhysicsObject(position-velocity);
+            LastPositionArray[ObjectCount] = position-velocity;
             ColorArray[ObjectCount] = color;
             PositionArray[ObjectCount] = position;
             ObjectCount++;
@@ -41,7 +43,7 @@ namespace VerletBallSimulation {
         }
         public bool AddObjectLastColor(float2 position, float2 velocity) {
             if(ObjectCount>=Capacity) return false;
-            ObjectsArray[ObjectCount] = new PhysicsObject(position-velocity);
+            LastPositionArray[ObjectCount] = position-velocity;
             PositionArray[ObjectCount] = position;
             ObjectCount++;
             return true;
@@ -82,7 +84,7 @@ namespace VerletBallSimulation {
             new UpdateObjectsJob() {
                 DeltaTime = dt,
                 Gravity = Gravity,
-                Objects =ObjectsArray,
+                LastPositions =LastPositionArray,
                 Positions = PositionArray,
                 Width = Grid.Width,Height = Grid.Height
             }.Schedule(ObjectCount,64,jobHandle).Complete();
@@ -93,13 +95,13 @@ namespace VerletBallSimulation {
                 DeltaTime = dt,
                 Gravity = Gravity,
                 Star = darkStar,
-                Objects =ObjectsArray,
+                LastPositions =LastPositionArray,
                 Positions = PositionArray,
                 Width = Grid.Width,Height = Grid.Height
             }.Schedule(ObjectCount,64,jobHandle).Complete();
         }
         public void Dispose() {
-            ObjectsArray.Dispose();
+            LastPositionArray.Dispose();
            // UnsafeUtility.Free(Objects, Allocator.Persistent);
             Grid.Dispose();
             PositionArray.Dispose();

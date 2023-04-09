@@ -307,10 +307,10 @@ MonoBehaviour:
   Width: 300
   Height: 300
   Gravity: {x: 0, y: -30}
-  StepsPerFrame: 1
+  StepsPerFrame: 8
   _material: {fileID: 2100000, guid: 88cd00170b861324ca5a60438203f7da, type: 2}
   Count: 0
-  TargetCount: 30000
+  TargetCount: 108000
   _texture: {fileID: 2800000, guid: 56dad06343aeb864bb03448094d9db35, type: 3}
   CapacityFactor: 1.2
   AddBallCount: 50

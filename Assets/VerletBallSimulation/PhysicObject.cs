@@ -6,9 +6,9 @@ namespace VerletBallSimulation {
     public struct PhysicsObject {
         public float2 LastPosition;
         public float2 Acceleration;
-        public PhysicsObject(float2 lastPosition) {
+        public PhysicsObject(float2 lastPosition,float2 acceleration) {
             LastPosition = lastPosition;
-            Acceleration = default;
+            Acceleration = acceleration;
         }
         const float MaxDelta=0.5f;
         public float2 Update(float2 position,float dt)
@@ -22,21 +22,9 @@ namespace VerletBallSimulation {
             if (MaxDelta < absY) {
                 lastUpdateMove*= (MaxDelta/absY);
             }
-           
             var  newPosition = position + lastUpdateMove + (Acceleration - lastUpdateMove * 40.0f) * (dt * dt);
             LastPosition           = position;
-            Acceleration = default;
             return                newPosition;
         }
-       
-
-        
-
-        public void AddVelocity(float2 v)
-        {
-            LastPosition -= v;
-        }
-
-        
     }
 }
