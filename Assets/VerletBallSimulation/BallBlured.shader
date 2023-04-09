@@ -1,4 +1,4 @@
-﻿Shader "Unlit/BallInstanced"
+﻿Shader "Unlit/BallBlured"
 {
 	Properties
 	{
@@ -11,6 +11,7 @@
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
+		Blend OneMinusDstColor One
 		Pass
 		{
 			CGPROGRAM

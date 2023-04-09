@@ -17,6 +17,7 @@ namespace VerletBallSimulation {
 
         BallRenderer _ballRenderer;
         [SerializeField]Material _material;
+        [SerializeField]Material _blurMaterial;
         BallMaterial _ballMaterial;
         public int Count;
         public int TargetCount;
@@ -30,8 +31,8 @@ namespace VerletBallSimulation {
             var capacity =(int) (Width * Height*CapacityFactor);
             Solver = new PhysicsSolver(Width,Height,capacity);
             Solver.Gravity = Gravity;
-            _ballRenderer=new BallRenderer(_material, capacity);
-            _ballMaterial = new BallMaterial(_material);
+            _ballRenderer=new BallRenderer( capacity);
+            _ballMaterial = new BallMaterial(_material,_blurMaterial);
             _wObject=IM.Add("Setting : Toggle with Esc",DrawSettings);
             _wObject.Opened = true;
             _wObject.Rect = new Rect(Screen.width - 400, 0 , 400,  Screen.height);
@@ -83,9 +84,10 @@ namespace VerletBallSimulation {
             if(IM.Foldout("Projectile Setting",ref _projectileSettingFO)) {
                 IMStyle.DragNumberScale = 0.1f;
                 var ballScale = _ballMaterial.BallScale;
-                if (IM.FloatField("Ball Size", ref ballScale, 0.01f,5f)) {
+                if (IM.FloatField("Ball Draw Size", ref ballScale, 0.01f,5f)) {
                     _ballMaterial.BallScale= ballScale;
                 }
+                _ballMaterial.Blur=  IM.BoolField("Blur", _ballMaterial.Blur);
                 IMStyle.DragNumberScale = 1f;
                 IM.Vector2Field("Gravity",ref Gravity);
                 IM.BoolField("UseDarkStar",ref UseDarkStar);
@@ -218,12 +220,12 @@ namespace VerletBallSimulation {
                         Solver.Update(1f/ 480f);
                 }
                 _simTime = s.GetElapsedTime().Ticks/10000f;
-                _ballRenderer.Update(Solver);
+                _ballRenderer.Update(_ballMaterial.Current,Solver);
             }
             else {
                 _simTime = 0;
             }
-            _ballRenderer.Draw();
+            _ballRenderer.Draw(_ballMaterial.Current);
             Count = Solver.ObjectCount;
         }
 

@@ -29,9 +29,6 @@ namespace VerletBallSimulation {
 
           jobHandle = new SolveCollisionJob(PositionPtr, Grid, 0).Schedule((Grid.Width+5)/6,0,jobHandle);
           return    new SolveCollisionJob(PositionPtr, Grid, 1).Schedule((Grid.Width+2)/6,0,jobHandle);
-           // jobHandle = new SolveCollisionJob(PositionPtr, Grid, 0).Schedule((Grid.Width+2)/3,0,jobHandle);
-           // jobHandle=   new SolveCollisionJob(PositionPtr, Grid, 1).Schedule((Grid.Width+1)/3,0,jobHandle);
-           // return   new SolveCollisionJob(PositionPtr, Grid, 2).Schedule(Grid.Width/3,0,jobHandle);
         }
         public bool AddObject(float2 position, float2 velocity,Color32 color) {
             if(ObjectCount>=Capacity) return false;

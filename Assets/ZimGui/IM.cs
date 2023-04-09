@@ -904,6 +904,11 @@ namespace ZimGui {
             if (!Current.TryGetNextRect(out var rect)) return false;
             return BoolField(rect, label, ref on);
         }
+        public static bool BoolField(Str label,  bool on) {
+                    if (!Current.TryGetNextRect(out var rect)) return false;
+                     BoolField(rect, label, ref on);
+                     return on;
+        }
 
         public static bool BoolField(Rect rect, Str label, ref bool on) {
             var success = rect.DivideToLabelAndValue(out var labelRect, out var valueRect);

@@ -10,13 +10,11 @@ namespace VerletBallSimulation {
         public GraphicsBuffer colorsBuffer;
         public GraphicsBuffer argsBuffer;
         public uint[] args;
-        public Material material;
         static readonly int PositionBufferID = Shader.PropertyToID("_PositionBuffer");
         static readonly int ColorBufferID = Shader.PropertyToID("_ColorBuffer");
 
-        public BallRenderer(Material material,int capacity) {
+        public BallRenderer(int capacity) {
             _mesh= QuadMaker.Quad();
-            this.material = material;
             args = new uint[] { 6, 0, 0, 0, 0 };
             argsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments,1, args.Length * sizeof(uint));
             positionBuffer=new GraphicsBuffer(GraphicsBuffer.Target.Structured, capacity, UnsafeUtility.SizeOf<Vector2>());
@@ -24,7 +22,7 @@ namespace VerletBallSimulation {
            
         }
 
-        public  void Update(PhysicsSolver solver) {
+        public  void Update(Material material,PhysicsSolver solver) {
             var count=solver.ObjectCount;
             positionBuffer.SetData(solver.PositionArray.GetSubArray(0,count));
             material.SetBuffer(PositionBufferID,positionBuffer);
@@ -35,7 +33,7 @@ namespace VerletBallSimulation {
           
         }
 
-        public void Draw() {
+        public void Draw(Material material) {
             Graphics.DrawMeshInstancedIndirect(_mesh, 0, material,
             new Bounds(default,new Vector3(float.MaxValue,float.MaxValue,float.MaxValue)),
             argsBuffer, 0, null,

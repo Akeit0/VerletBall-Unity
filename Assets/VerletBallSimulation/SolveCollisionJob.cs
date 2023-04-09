@@ -21,11 +21,9 @@ namespace VerletBallSimulation {
             var height= Grid.Height;
             var maxX=math.min(startX+3,Grid.Width);
             for (int x = startX; x < maxX; x++) {
-                CollisionCell lastCell = default;
-                CollisionCell currentCell = Grid[x, 0];
                 for (int y = 0; y < height; y++) {
                     var id = x * height + y;
-                    var nextCell = (y != height - 1) ? Grid[id+ 1] : default;
+                    var currentCell= Grid[id];
                     for (int i = 0; i < currentCell.ObjectsCount; i++) {
                         ref  var  pos = ref Positions[currentCell.Indices[i]];
                         SolveContactsInCell(ref pos,i,currentCell);
@@ -39,11 +37,9 @@ namespace VerletBallSimulation {
                             if(y!=0) SolveContacts(ref pos, id+height - 1);
                             if(y!=height-1) SolveContacts(ref pos, id+height + 1);
                         }
-                        if (y != 0) SolveContacts(ref pos, lastCell);
-                        if(y!=height-1) SolveContacts(ref pos, nextCell);
+                        if (y != 0) SolveContacts(ref pos, Grid[id- 1]);
+                        if(y!=height-1) SolveContacts(ref pos, Grid[id+ 1]);
                     }
-                    lastCell= currentCell;
-                    currentCell= nextCell;
                 }
             }
         } 
